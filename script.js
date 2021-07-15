@@ -81,6 +81,18 @@ canvas.addEventListener("mouseup", function (e) {
 })
 
 
+// Now, as it can be seen in the index.html file , we needed to add the tools and for that we made the 
+// tool-bar class -> and inside that the tool class for all the images of the different tools -> and then the
+// canvas . Now, when we do this , we have 3 diff area , one for tool-bar class, inside that diff area for each
+// tool and then below the tool-bar class , we have the canvas section . Now, what will happen here is that
+// whenever we will be drawing something, if the canvas area is starting from 0,3 instead of 0,0(due to the tool-bar)
+// class , so now , when the line will be drawn , e.g. if we click at x,y -> then e.clientX/Y , will take
+// the co-ordinates of that point with respect to 0,0 and so if we draw something at 5,10 it will be taken 
+// as cordinates as 5,10 ... and so printed at 5,13 since that canvas area started at 0,3 so tool.begin from
+/// 0,3 and hence from there a line at dist of 10 will be drawn and we don't want this and so , what we will 
+/// do is remove the starting cord of y from the obtained value using bounds.y.. which will give us the bounds
+// of the canvas we are having. Else , what will happen is that we will be making our line somewhere 3 steps below
+// from where are pointer is currently present . // ### THIS IS THE ISSUE FACED.
 function getCoordinates(y) {
 
     let bounds = canvas.getBoundingClientRect();
