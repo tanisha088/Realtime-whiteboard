@@ -98,6 +98,15 @@ function getCoordinates(y) {
     let bounds = canvas.getBoundingClientRect();
     return y - bounds.y
 }
+
+// NOW, what we will do is create the tools using querySelectorAll, with tools-image as class -->
+//The Document method querySelectorAll() returns a static (not live) 
+//NodeList representing a list of the document's elements that match the specified group of selectors.
+// So this tools object will be having the info of the elements inside the tool image class -> now
+// whenever we click on any of the tools images , then this addEventListener will capture that click as
+// with every tools[i] we have attached this functionality --> and now, what will happen is we will get the 
+// target on which it was clicked -> we will retrieve its id -> if it is pencil -> then make the strokestyle of
+// tool as black and hence now , whenever tool is used, line drawn will be of black color and so on for others.
 let tools = document.querySelectorAll(".tool-image");
 for (let i = 0; i < tools.length; i++) {
     tools[i].addEventListener("click", function (e) {
@@ -121,6 +130,17 @@ for (let i = 0; i < tools.length; i++) {
     })
 }
 
+// This is the function to create the box for the sticky note -> In this , what will happen is that first we will
+// create this stickypad , navBar etc. and then we will set the respective classes for all of these and then
+// what we will do is find the initialX and intialY and take 2 booleans for isStickyDown and isMinimized 
+// NOw, we will add the functionality of mouse down on the navBar , so that whenever we press the button on
+//it we will get the initial X and intial Y and then in the mousemove, till the point the boolean isStickyDown = false
+// we will keep calculating the distance of the final and the initial position of the X and Y and hence calculate the diff
+// in their intial and final positions and thus we set the final top and left of the sticky note . We needed to do this,
+// since in this case we were moving the whole object body from one place to other and not a line and hence when it
+// reached to the new position , it was set as that of the new position. We needed to calculate the prior
+// distance since these cordinates are set acc to the theme of the browser , but the object body needs to 
+// be set differently. 
 function createBox() {
     let stickyPad = document.createElement("div");
     let navBar = document.createElement("div");
@@ -150,6 +170,7 @@ function createBox() {
         initialY = e.clientY
         isStickyDown = true;
     })
+
     canvas.addEventListener("mousemove", function (e) {
         if (isStickyDown == true) {
             // final point 
@@ -168,9 +189,15 @@ function createBox() {
             initialY = finalY;
         }
     })
+
+    // Leaving the mouse will make the isStickyDown = true. 
     window.addEventListener("mouseup", function () {
         isStickyDown = false;
     })
+
+    // In the minimimize fn , we add the functionality , that if isMinimized is true , then 
+    // the minimized button has been clicked and hence we need to display nothing (none) and
+    // if it is closed, then the display will be showing the whole block                  
     minimize.addEventListener("click", function () {
         if (isMinimized) {
             textArea.style.display = "none";
@@ -180,6 +207,8 @@ function createBox() {
         }
         isMinimized = !isMinimized
     })
+                       
+    // On clicking the close button,the remove functionality will be used to remove the body of the object. 
     close.addEventListener("click", function () {
         stickyPad.remove();
     })
@@ -187,10 +216,13 @@ function createBox() {
 
 }
 
+
+
 // ***********sticky******************
 function createSticky() {
 
 
+    // Created the whole stickynote and then added the textbox appending it to the textArea
     let textArea = createBox();
     let textBox = document.createElement("textarea");
     textBox.setAttribute("class", "textarea");
@@ -202,6 +234,16 @@ function createSticky() {
 }
 
 // *********undo ****************
+// In this , we take the elements one by one from the stack , (which are basically what have been created due to the holding of the
+//mouse from one point to another) , for each of the object if the descriptor is "mm" then we push it to the redo stack and if "md" then we break
+// from this loop. This is because, when we were pushing the objects or cordinates to the stack , then at that time, firstly the 
+// initial cordinates were pushed and then, all cordinates formed by moving the cursor were pushed. So getting the 
+// md description proves that we have reached the point where we started to push the mouse button to start drawing.
+// So what we do is first clear the whole board of canvas (not the tool section) and then , till the time we don't
+// get a "md" , pop the elements from the undoStack and then, push it to the redoStack. Now, what one undo does
+// is to remove 1 line drawn by one pressing and then moving and so this is done. Now, since we initially 
+//cleared the whole setup , we now draw everything back using redraw and undostack , i.e. with the left
+//over lines and hence we now have everything except the last made line.
 function undomaker() {
     // clear board
     tool.clearRect(0, 0, canvas.width, canvas.height);
@@ -220,6 +262,8 @@ function undomaker() {
     redraw();
 }
 // ************redo*************
+//So, similar to above, we vanish everything , and then push everything from redo to undo stack and then
+// draw everything present in the undo stack.
 function redomaker() {
     tool.clearRect(0, 0, canvas.width, canvas.height);
     while (redoStack.length > 0) {
@@ -256,6 +300,13 @@ function redraw() {
 // a.href = url;
 // a.click();
 // })
+
+// EVERY asset can be converted to a 64bit string or url 
+// Now, in order to download the board what we did was to create a anchor tag, add the file name with which
+// it will be downloaded if downloaded... then we will convert the current browser image present into a 
+// 64 bit string which will act as the URL for that and hence, we will set the url of the anchor tag with it
+// and after that we will add the click functionality to it.
+
 function downloadBoard() {
     //  create an anchor
     // e.preventDefault();
@@ -276,6 +327,13 @@ let imgInput = document.querySelector("#acceptImg");
 // dialog box open
 function uploadFile() {
     // dialog box select ok 
+
+    // FIrstly with the click functionality on upload file ,we get the new small window from which we can
+    // get the required image and then from here when we choose the image required , then this change
+    // functionality gets triggered and then we get the image object and then convert it to url and then
+    // we create a new element img and then set its class and then set the src of that image as the url
+    // we got and hence we can now append this image to the text BOX and then , we can get the image similar to 
+    // the form of the sticky note with minimize and close button.
 imgInput.click();
     imgInput.addEventListener("change", function () {
         console.log(imgInput.files);
